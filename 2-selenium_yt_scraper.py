@@ -13,38 +13,8 @@ options.add_experimental_option("excludeSwitches", ["enable-automation"])
 options.add_experimental_option('useAutomationExtension', False)
 driver = webdriver.Chrome(options=options, executable_path='chromedriver.exe')
 baseurl = "http://youtube.com"
-'''
-keyword = 'barbara trailer'#input()
-driver.get(f'{baseurl}/search?q={keyword}')
-print([my_elem.text for my_elem in WebDriverWait(driver, 20).until(EC.visibility_of_all_elements_located((By.XPATH, "//yt-formatted-string[@class='style-scope ytd-video-renderer' and @aria-label]")))])
-WebDriverWait(driver, 20).until(EC.visibility_of_all_elements_located((By.XPATH, "//yt-formatted-string[@class='style-scope ytd-video-renderer' and @aria-label]")))[0].click()
-#print([my_elem.text for my_elem in ])
-viewsNum = WebDriverWait(driver, 20).until(EC.visibility_of_all_elements_located((By.XPATH, "//span[@class='view-count style-scope yt-view-count-renderer']")))[0].text
-viewsNum = int(re.sub('\D', '', viewsNum))
-print("VIEWS: ", str(viewsNum))
-driver.execute_script("window.scrollTo(0, 200)")
-commentCount = WebDriverWait(driver, 20).until(EC.visibility_of_all_elements_located((By.XPATH, "//yt-formatted-string[@class='count-text style-scope ytd-comments-header-renderer']")))[0].text
-commentCount = int(re.sub('\D', '', commentCount))
-print("Comment Count: ", str(commentCount))
-
-likeCount = WebDriverWait(driver, 20).until(EC.visibility_of_all_elements_located((By.XPATH, "//yt-formatted-string[@class='style-scope ytd-toggle-button-renderer style-text' and contains(@aria-label, 'gostaram')]")))[0].get_attribute("aria-label")
-likeCount = int(re.sub('\D', '', likeCount))
-print("likeCount: ", str(likeCount))
-
-dislikeCount = WebDriverWait(driver, 20).until(EC.visibility_of_all_elements_located((By.XPATH, "//yt-formatted-string[@class='style-scope ytd-toggle-button-renderer style-text' and contains(@aria-label, 'marcações \"Não gostei\"')]")))[0].get_attribute("aria-label")
-dislikeCount = int(re.sub('\D', '', dislikeCount))
-print("dislikeCount: ", str(dislikeCount))
-'''
-#/html/body/ytd-app/div/ytd-page-manager/ytd-watch-flexy/div[4]/div[1]/div/div[7]/div[2]/ytd-video-primary-info-renderer/div/div/div[3]/div/ytd-menu-renderer/div/ytd-toggle-button-renderer[2]/a/yt-formatted-string
-
-
-'''
-driver.quit()'''
-
-
 data_basics = pd.read_csv('final_result.csv')
 
-#data_basics = data_basics.sample(n = 5)
 yt = []
 try:
     for index, row in tqdm(data_basics.iterrows(), total=data_basics.shape[0]):
@@ -52,7 +22,6 @@ try:
         driver.get(f'{baseurl}/search?q={keyword}')
         print("****************")
         print(row['originalTitle'])
-        #print([my_elem.text for my_elem in WebDriverWait(driver, 20).until(EC.visibility_of_all_elements_located((By.XPATH, "//yt-formatted-string[@class='style-scope ytd-video-renderer' and @aria-label]")))])
         WebDriverWait(driver, 20).until(EC.visibility_of_all_elements_located((By.XPATH, "//yt-formatted-string[@class='style-scope ytd-video-renderer' and @aria-label]")))[0].click()
         try:
             viewsNum = WebDriverWait(driver, 3).until(EC.visibility_of_all_elements_located((By.XPATH, "//span[@class='view-count style-scope yt-view-count-renderer']")))[0].text
@@ -88,12 +57,11 @@ try:
 except:
     pass
 
-data_basics["yt_stats"] = yt #data_basics.apply(lambda x: youtube_request(x["originalTitle"]),axis=1)
+data_basics["yt_stats"] = yt
 data_basics["viewCount"] = data_basics.apply(lambda x: x["yt_stats"].split(";")[0],axis=1)
 data_basics["likeCount"] = data_basics.apply(lambda x: x["yt_stats"].split(";")[1],axis=1)
 data_basics["dislikeCount"] = data_basics.apply(lambda x: x["yt_stats"].split(";")[2],axis=1)
 data_basics["commentCount"] = data_basics.apply(lambda x: x["yt_stats"].split(";")[3],axis=1)
 data_basics.drop("yt_stats", axis=1, inplace=True)
 print(data_basics.head(5))
-
 data_basics.to_csv("final_result_youtube_stats.csv")

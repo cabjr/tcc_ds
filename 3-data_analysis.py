@@ -26,9 +26,7 @@ values = list(data.values())
    
 fig = plt.figure(figsize = (10, 5)) 
   
-# creating the bar plot 
-plt.bar(courses, values, color ='maroon',  
-        width = 0.4) 
+plt.bar(courses, values, color ='maroon', width = 0.4) 
   
 plt.xlabel("Classe") 
 plt.ylabel("Número de produções cinematográficas") 
@@ -41,9 +39,7 @@ print("Count year: ",data_basics['startYear'].value_counts().to_dict())
 data = data_basics['startYear'].value_counts().to_dict()
 values = list(data.values()) 
 years = list(data.keys())
-#years = [int(year) for year in years]
 fig = plt.figure(figsize = (10, 5)) 
-# creating the bar plot 
 plt.bar(years, values, color ='maroon',  
         width = 0.4) 
 plt.xlabel("Ano de produção") 
@@ -52,7 +48,6 @@ plt.title("Distribuição do ano de produção das obras")
 plt.savefig("anoDist.png")
 #plt.show()
 
-#data = data_basics['genres'].value_counts().to_dict()
 genres = []
 for val in data_basics['genres'].values:
     if ',' in val:

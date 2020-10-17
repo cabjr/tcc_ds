@@ -78,8 +78,8 @@ def budget_revenue(df):
     return df
 
 def parallelize_dataframe(df, func):
-    num_cores = multiprocessing.cpu_count()-2  #leave one free to not freeze machine
-    num_partitions = num_cores #number of partitions to split dataframe
+    num_cores = multiprocessing.cpu_count()-2
+    num_partitions = num_cores 
     df_split = np.array_split(df, num_partitions)
     pool = multiprocessing.Pool(num_cores)
     df = pd.concat(pool.map(func, df_split))
@@ -97,26 +97,13 @@ data_basics["startYear"] = pd.to_numeric(data_basics["startYear"],errors='coerce
 data_basics["runtimeMinutes"] = data_basics["runtimeMinutes"].apply (pd.to_numeric, errors='coerce')
 data_basics = data_basics.dropna()
 data_basics = data_basics[data_basics["genres"] != '\\N']
-#data_basics = data_basics[data_basics["isAdult"] == 1]
 data_basics = data_basics[~data_basics["genres"].str.contains('Documentary')]
 data_basics = data_basics[data_basics["originalTitle"].isin(tmdb_dataset['original_title'].values)]
 data_basics = data_basics[data_basics["startYear"] >= 2000]
 
-
-print(data_basics.head(20))
-#YOUTUBE FEATURES/STATISTICS
-
-
-
 data_actors = pd.read_csv('title.principals.tsv/data.tsv', sep='\t')
 data_dir_writer = pd.read_csv('title.crew.tsv/data.tsv', sep='\t')
 data_persons = pd.read_csv('name.basics.tsv/data.tsv', sep='\t')
-print(data_actors.head())
-print(data_persons.head())
-
-print("ITERATE OVER ROWS OF MOVIE:")
-
-
 
 data_basics = parallelize_dataframe(data_basics, actors_exp)
 data_basics = parallelize_dataframe(data_basics, writers_dirs_exp)
@@ -126,18 +113,4 @@ data_basics = parallelize_dataframe(data_basics, budget_revenue)
 data_basics = data_basics[data_basics["revenue"] != 0]
 data_basics = data_basics[data_basics["budget"] != 0]
 
-print( "NUMBER OF ROWS DATAFRAME FINAL: ",len(data_basics.index))
-#data_basics = data_basics.sample(n = 5)
-'''
-data_basics["yt_stats"] = data_basics.apply(lambda x: youtube_request(x["originalTitle"]),axis=1)
-data_basics["viewCount"] = data_basics.apply(lambda x: x["yt_stats"].split(";")[0],axis=1)
-data_basics["likeCount"] = data_basics.apply(lambda x: x["yt_stats"].split(";")[1],axis=1)
-data_basics["dislikeCount"] = data_basics.apply(lambda x: x["yt_stats"].split(";")[2],axis=1)
-data_basics["commentCount"] = data_basics.apply(lambda x: x["yt_stats"].split(";")[3],axis=1)
-data_basics.drop("yt_stats", axis=1, inplace=True)
-'''
-print(data_basics.head(5))
-
 data_basics.to_csv("final_result.csv")
-
-#FOR EACH TITLE GET NCONST IN TITLE.PRINCIPALS AND SUM NUM OF KNOWN TITLES FROM NAMES.BASICS
